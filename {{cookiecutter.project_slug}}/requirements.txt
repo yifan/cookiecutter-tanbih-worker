@@ -1,0 +1,3 @@
+pulsar-client==2.5.1
+tanbih-pipeline==0.1.*
+pytest

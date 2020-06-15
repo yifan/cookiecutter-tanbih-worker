@@ -1,0 +1,22 @@
+{
+  "author": "Yifan Zhang",
+  "email": "yzhang@hbku.edu.qa",
+  "project_name": "tanbih worker",
+  "project_slug": "{{cookiecutter.project_name|lower|replace(' ', '-')}}",
+  "project_description": "{{cookiecutter.project_name}}",
+  "worker_name": "{{cookiecutter.project_name|lower|replace(' ','')}}",
+  "worker_version": "0.0.0",
+  "worker_class_name": "{{cookiecutter.project_name|title|replace(' ','')}}",
+  "worker_type": ["Processor", "Generator", "Splitter"],
+  "worker_no_output": "n",
+  "worker_retry": "y",
+  "prometheus_enabled": "y",
+  "container_registery": "meganews.azurecr.io/meganews",
+  "slack_webhook": "",
+  "k8s_app_name": "{{cookiecutter.worker_name}}",
+  "k8s_image_name": "{{cookiecutter.worker_name}}",
+  "k8s_staging_namespace": "staging",
+  "k8s_production_namespace": "production",
+  "staging_url": "",
+  "production_url": ""
+}

@@ -1,0 +1,94 @@
+variables:
+  GET_SOURCES_ATTEMPTS: 3
+
+stages:
+  - test
+  - build
+  - deploy
+
+test:
+  stage: test
+  variables:
+    NAME: {{cookiecutter.worker_name}}
+  script:
+    - docker build -t $NAME -f Dockerfile .
+    - docker run --name $NAME -w /code $NAME pytest
+  after_script:
+    - docker stop $NAME
+    - docker rm $NAME
+    - docker rmi $NAME:latest
+  only:
+    - tags
+    - pull_requests
+    - develop
+
+build:
+  stage: build
+  variables:
+    TAG: $CI_COMMIT_REF_NAME
+    NAME: {{cookiecutter.worker_name}}
+  script:
+    - docker login $ACR_REGISTERY -u $ACR_USERNAME -p $ACR_PASSWORD
+    - docker build -t $NAME:$TAG -f Dockerfile .
+    - docker tag $NAME:$TAG {{cookiecutter.container_registery}}/$NAME:$TAG
+    - docker push {{cookiecutter.container_registery}}/$NAME:$TAG
+  after_script:
+    - docker rmi $NAME:$TAG {{cookiecutter.container_registery}}/$NAME:$TAG
+{%- if cookiecutter.slack_webhook|length %}
+    - >-
+      curl -X POST --data-urlencode "payload={\"channel\": \"#pipeline\", \"username\": \"tanbih\", 
+      \"text\": \"$NAME:$TAG image pushed to registery\", \"icon_emoji\": \":ghost:\"}" 
+      {{cookiecutter.slack_webhook}}
+{%- endif %}
+  only:
+    - tags
+
+staging:
+  stage: deploy
+  variables:
+    TAG: $CI_COMMIT_REF_NAME
+    NAME: {{cookiecutter.worker_name}}
+    IMAGE: {{cookiecutter.k8s_image_name}}:$CI_COMMIT_REF_NAME
+  script:
+    - kubectl set image deployment/{{cookiecutter.k8s_app_name}} {{cookiecutter.k8s_app_name}}=$IMAGE -n {{cookiecutter.k8s_staging_namespace}} --insecure-skip-tls-verify=true
+    - kubectl rollout status -w deployment/{{cookiecutter.k8s_app_name}} -n {{cookiecutter.k8s_staging_namespace}} --insecure-skip-tls-verify=true
+{%- if cookiecutter.slack_webhook|length %}
+    - >-
+      curl -X POST --data-urlencode "payload={\"channel\": \"#pipeline\", \"username\": \"tanbih\",
+      \"text\": \"$NAME:$TAG is deployed to staging {% if cookiecutter.staging_url %} {{cookiecutter.staging_url}} {% endif %}\",
+      \"icon_emoji\": \":ghost:\"}"
+      {{cookiecutter.slack_webhook}}
+{%- endif %}
+{%- if cookiecutter.staging_url|length %}
+  environment:
+    name: staging
+    url: {{cookiecutter.staging_url}}
+{%- endif %}
+  only:
+    - tags
+  when: manual
+
+prod:
+  stage: deploy
+  variables:
+    TAG: $CI_COMMIT_REF_NAME
+    NAME: {{cookiecutter.worker_name}}
+    IMAGE: {{cookiecutter.k8s_image_name}}:$CI_COMMIT_REF_NAME
+  script:
+    - kubectl set image deployment/{{cookiecutter.k8s_app_name}} {{cookiecutter.k8s_app_name}}=$IMAGE -n {{cookiecutter.k8s_production_namespace}} --insecure-skip-tls-verify=true
+    - kubectl rollout status -w deployment/{{cookiecutter.k8s_app_name}} -n {{cookiecutter.k8s_production_namespace}} --insecure-skip-tls-verify=true
+{%- if cookiecutter.slack_webhook|length %}
+    - >-
+      curl -X POST --data-urlencode "payload={\"channel\": \"#pipeline\", \"username\": \"tanbih\",
+      \"text\": \"$NAME:$TAG is deployed to production {% if cookiecutter.production_url %} {{cookiecutter.production_url}} {% endif %}\", 
+      \"icon_emoji\": \":ghost:\"}"
+      {{cookiecutter.slack_webhook}}
+{%- endif %}
+{%- if cookiecutter.production_url|length %}
+  environment:
+    name: production
+    url: {{cookiecutter.production_url}}
+{%-  endif %}
+  only:
+    - tags
+  when: manual
