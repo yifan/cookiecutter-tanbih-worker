@@ -20,6 +20,10 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
             nooutput=True, 
 {%- endif -%}
         )
+
+    def setup(self):
+        # Add custom initialization code such as loading models
+        # and establish connections here
 {% if cookiecutter.worker_type == 'Processor' %}
     def process(self, dct):
         # Modify this
@@ -35,6 +39,7 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
         return "{}-{}".format(self.destination.topic, dct.get('key', 'default'))
         {%- endraw %}
 {%- endif %}
+    
 
 if __name__ == '__main__':
     worker = {{cookiecutter.worker_class_name}}()
