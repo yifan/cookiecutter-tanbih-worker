@@ -2,7 +2,7 @@ import logging
 {%- if cookiecutter.prometheus_enabled == 'y' %}
 from prometheus_client import Counter
 {%- endif %}
-from pipeline import {{cookiecutter.worker_type}}
+from pipeline import {{cookiecutter.worker_type}}Config, {{cookiecutter.worker_type}}
 from version import __worker__, __version__
 
 
@@ -23,7 +23,6 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
 {% elif cookiecutter.worker_type == 'Splitter' %}
         config = SplitterConfig()
 {%- endif %}
-
         super().__init__(
             __worker__, __version__,
             "{{cookiecutter.project_description}}",
@@ -33,12 +32,13 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
     def setup(self):
         # Add custom initialization code such as loading models
         # and establish connections here
+        pass
 {% if cookiecutter.worker_type == 'Processor' %}
     def process(self, msg):
-        value = msg.get('existingKey')
+        value = msg.get('existingKey', 1)
         msg.update({
             'existingKey': value+1,
-            'newKey': value,
+            'processed': True,
         })
         return None
 {% elif cookiecutter.worker_type == 'Generator' %}
@@ -46,11 +46,10 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
         # Modify this
         yield {'key': 'message-id'}
 {% elif cookiecutter.worker_type == 'Splitter' %}
-    def get_topic(self, dct):
+    def get_topic(self, msg):
         # Modify this
-        return "{}-{}".format(self.destination.topic, dct.get('key', 'default'))
+        return msg.get('key', 'default')
 {%- endif %}
-
 
 if __name__ == '__main__':
     worker = {{cookiecutter.worker_class_name}}()
