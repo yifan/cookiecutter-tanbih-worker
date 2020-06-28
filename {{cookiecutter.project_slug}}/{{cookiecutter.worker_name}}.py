@@ -13,20 +13,33 @@ logger = logging.getLogger('worker')
 
 class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
     def __init__(self):
+{% if cookiecutter.worker_type == 'Processor' %}
+        config = ProcessorConfig()
+{%- if cookiecutter.worker_no_output == 'y' %}
+        config.disable_output()
+{%- endif -%}
+{% elif cookiecutter.worker_type == 'Generator' %}
+        config = GeneratorConfig()
+{% elif cookiecutter.worker_type == 'Splitter' %}
+        config = SplitterConfig()
+{%- endif %}
+
         super().__init__(
             __worker__, __version__,
             "{{cookiecutter.project_description}}",
-{%- if cookiecutter.worker_no_output == 'y' %}
-            nooutput=True, 
-{%- endif -%}
+            config,
         )
 
     def setup(self):
         # Add custom initialization code such as loading models
         # and establish connections here
 {% if cookiecutter.worker_type == 'Processor' %}
-    def process(self, dct):
-        # Modify this
+    def process(self, msg):
+        value = msg.get('existingKey')
+        msg.update({
+            'existingKey': value+1,
+            'newKey': value,
+        })
         return None
 {% elif cookiecutter.worker_type == 'Generator' %}
     def generate(self):
@@ -35,11 +48,9 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
 {% elif cookiecutter.worker_type == 'Splitter' %}
     def get_topic(self, dct):
         # Modify this
-        {%- raw %}
         return "{}-{}".format(self.destination.topic, dct.get('key', 'default'))
-        {%- endraw %}
 {%- endif %}
-    
+
 
 if __name__ == '__main__':
     worker = {{cookiecutter.worker_class_name}}()
