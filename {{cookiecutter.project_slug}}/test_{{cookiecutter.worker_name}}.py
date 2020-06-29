@@ -9,7 +9,7 @@ class Test{{cookiecutter.worker_class_name}}(TestCase):
         worker = {{cookiecutter.worker_class_name}}()
         msg = Message({'processed': False})
         worker.process(msg)
-        self.assertTrue(msg.get('processed', False))
+        self.assertTrue(msg.get('newKey', False))
 {% elif cookiecutter.worker_type == 'Generator' %}
     def test_generate(self):
         worker = {{cookiecutter.worker_class_name}}()

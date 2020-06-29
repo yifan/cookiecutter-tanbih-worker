@@ -38,7 +38,7 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
         value = msg.get('existingKey', 1)
         msg.update({
             'existingKey': value+1,
-            'processed': True,
+            'newKey': True,
         })
         return None
 {% elif cookiecutter.worker_type == 'Generator' %}
