@@ -10,6 +10,16 @@ class Test{{cookiecutter.worker_class_name}}(TestCase):
         msg = Message({'processed': False})
         worker.process(msg)
         self.assertTrue(msg.get('newKey', False))
+
+    def test_worker(self):
+        worker = {{cookiecutter.worker_class_name}}()
+        msgs = [{'key': 'msg1'}, {'key': 'msg2'}]
+        worker.parse_args(args=['--kind', 'MEM'], config={'data': msgs})
+        worker.start()
+        # make sure we get two results
+        self.assertEqual(len(worker.destination.results), 2)
+        result1 = worker.destination.results[0]
+        self.assertEqual(result1.get('key'), 'msg1')
 {% elif cookiecutter.worker_type == 'Generator' %}
     def test_generate(self):
         worker = {{cookiecutter.worker_class_name}}()
