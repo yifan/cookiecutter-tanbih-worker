@@ -9,7 +9,7 @@
   "worker_class_name": "{{cookiecutter.project_name|title|replace(' ','')}}",
   "worker_type": ["Processor", "Generator", "Splitter"],
   "worker_no_output": "n",
-  "worker_retry": "y",
+  "worker_retry": "n",
   "prometheus_enabled": "y",
   "container_registery": "meganews.azurecr.io/meganews",
   "slack_webhook": "",
