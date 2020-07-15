@@ -5,12 +5,6 @@ from {{cookiecutter.worker_name}} import {{cookiecutter.worker_class_name}}
 
 class Test{{cookiecutter.worker_class_name}}(TestCase):
 {% if cookiecutter.worker_type == 'Processor' %}
-    def test_process(self):
-        worker = {{cookiecutter.worker_class_name}}()
-        msg = Message({'processed': False})
-        worker.process(msg)
-        self.assertTrue(msg.get('newKey', False))
-
     def test_worker(self):
         worker = {{cookiecutter.worker_class_name}}()
         msgs = [{'key': 'msg1'}, {'key': 'msg2'}]

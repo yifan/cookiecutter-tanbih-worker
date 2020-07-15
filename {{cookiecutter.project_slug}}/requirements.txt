@@ -1,3 +1,4 @@
 pulsar-client==2.5.1
-tanbih-pipeline==0.3.*
+prometheus-client==0.7.*
+tanbih-pipeline==0.4.*
 pytest

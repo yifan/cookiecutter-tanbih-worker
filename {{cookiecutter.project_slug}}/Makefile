@@ -6,4 +6,4 @@ test:
 pdb:
 	. venv/bin/activate && python3 -m pdb ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json
 dev:
-	. venv/bin/activate && python3 ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json --repeat 1 --debug
+	. venv/bin/activate && python3 ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json --repeat 1 --debug --outfile -

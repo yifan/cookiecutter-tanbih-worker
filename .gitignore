@@ -1,0 +1,5 @@
+generator.yaml
+splitter.yaml
+processor.yaml
+test.sh
+**.swp
