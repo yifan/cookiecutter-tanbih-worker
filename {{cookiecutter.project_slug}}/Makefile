@@ -1,9 +1,9 @@
 .PHONY: test
 init:
-	rm -rf venv && python3 -m venv venv && . venv/bin/activate && python3 -m pip install -r requirements.txt
+	rm -rf env && python3 -m venv env && . ./env/bin/activate && python3 -m pip install -r requirements.txt
 test:
-	. venv/bin/activate && python3 -m pytest
+	. ./env/bin/activate && python3 -m pytest -v
 pdb:
-	. venv/bin/activate && python3 -m pdb ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json
+	. ./env/bin/activate && python3 -m pdb ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json
 dev:
-	. venv/bin/activate && python3 ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json --repeat 1 --debug --outfile -
+	. ./env/bin/activate && python3 ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json --repeat 1 --debug --outfile -
