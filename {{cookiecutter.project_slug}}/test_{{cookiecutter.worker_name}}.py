@@ -10,10 +10,12 @@ class Test{{cookiecutter.worker_class_name}}(TestCase):
         msgs = [{'key': 'msg1'}, {'key': 'msg2'}]
         worker.parse_args(args=['--kind', 'MEM'], config={'data': msgs})
         worker.start()
+{%- if cookiecutter.worker_no_output == 'y' %}
         # make sure we get two results
         self.assertEqual(len(worker.destination.results), 2)
         result1 = worker.destination.results[0]
         self.assertEqual(result1.get('key'), 'msg1')
+{%- endif -%}
 {% elif cookiecutter.worker_type == 'Generator' %}
     def test_generate(self):
         worker = {{cookiecutter.worker_class_name}}()
