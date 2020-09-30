@@ -14,9 +14,10 @@ logger = logging.getLogger('worker')
 class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
     def __init__(self):
 {%- if cookiecutter.worker_type == 'Processor' %}
-        config = ProcessorConfig()
 {%- if cookiecutter.worker_no_output == 'y' %}
-        config.disable_output()
+        config = ProcessorConfig(noOutput=True)
+{% else %}
+        config = ProcessorConfig()
 {%- endif -%}
 {%- elif cookiecutter.worker_type == 'Generator' %}
         config = GeneratorConfig()
