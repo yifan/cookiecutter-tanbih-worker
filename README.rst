@@ -22,15 +22,17 @@ The generated project uses
 By default, the generated file will include an version.py, Makefile, Dockerfile, and a .gitlab-ci.yml
 default files genearted are
 
-  ├──     Dockerfile
-  ├──     Makefile
-  ├──     README.md
-  ├──     requirements.txt
-  ├──     tanbihworker.py
-  ├──     test_tanbihworker.py
-  └──     version.py
+```
+    ├──     Dockerfile
+    ├──     Makefile
+    ├──     README.md
+    ├──     requirements.txt
+    ├──     tanbihworker.py
+    ├──     test_tanbihworker.py
+    └──     version.py
+```
 
-  Tanbih pipeline project by default includes GitLab CI/CI 
+Tanbih pipeline project by default includes GitLab CI/CI 
 
 
 Python
