@@ -3,3 +3,5 @@ splitter.yaml
 processor.yaml
 test.sh
 **.swp
+.DS_Store
+.python-version

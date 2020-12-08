@@ -1,8 +1,7 @@
-FROM python:3.6.8-slim
+FROM python:3.8-slim
 MAINTAINER yifan
 
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8 PIPENV_HIDE_EMOJIS=1
-WORKDIR /code
 RUN apt-get update \
     && apt-get install -y \
             librdkafka-dev \
@@ -17,11 +16,10 @@ RUN python3 -m ensurepip \
     && pip3 install -U --no-cache-dir pipenv \
     && ln -sf $(which python) /bin/python
 
-ENV LC_ALL=C.UTF-8 LANG=C.UTF-8 PIPENV_HIDE_EMOJIS=1
-
 WORKDIR /code
-COPY . /code
+COPY requirements.txt /code
+RUN python3 -m pip install -r /code/requirements.txt
 
-RUN python3 -m pip install -r requirements.txt
+COPY . /code
 ENV PYTHONPATH=/code
 CMD ["python", "{{cookiecutter.worker_name}}.py"]
