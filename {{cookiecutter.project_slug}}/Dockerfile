@@ -9,6 +9,7 @@ RUN apt-get update \
             libxslt-dev \
             libwebp-dev \
             libmariadb-dev  \
+            gcc \
     && rm -rf /var/cache/apk/*
 
 RUN python3 -m ensurepip \
