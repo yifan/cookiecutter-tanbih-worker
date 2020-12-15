@@ -14,7 +14,7 @@ RUN apt-get update \
 
 RUN python3 -m ensurepip \
     && rm -rf /usr/lib/python*/ensurepip \
-    && pip3 install -U --no-cache-dir pipenv \
+    && python3 -m pip install -U --no-cache-dir pip \
     && ln -sf $(which python) /bin/python
 
 WORKDIR /code
