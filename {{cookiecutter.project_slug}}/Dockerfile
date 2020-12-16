@@ -1,5 +1,5 @@
 FROM python:3.8-slim
-MAINTAINER yifan
+LABEL maintainer={{cookiecutter.author}}
 
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8 PIPENV_HIDE_EMOJIS=1
 RUN apt-get update \
