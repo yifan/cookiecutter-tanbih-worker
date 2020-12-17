@@ -23,4 +23,4 @@ RUN python3 -m pip install -r /code/requirements.txt
 
 COPY . /code
 ENV PYTHONPATH=/code
-CMD ["python", "{{cookiecutter.worker_name}}.py"]
+ENTRYPOINT ["python", "{{cookiecutter.worker_name}}.py"]
