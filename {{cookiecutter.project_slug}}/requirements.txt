@@ -1,2 +1,2 @@
-tanbih-pipeline==0.7.*
+tanbih-pipeline
 pytest
