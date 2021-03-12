@@ -12,7 +12,7 @@ test:
     NAME: {{cookiecutter.worker_name}}
   script:
     - docker build -t $NAME -f Dockerfile .
-    - docker run --name $NAME -w /code $NAME pytest
+    - docker run --name $NAME -w /code --entrypoint pytest $NAME
   after_script:
     - docker stop $NAME
     - docker rm $NAME
@@ -31,9 +31,13 @@ build:
     - docker login $ACR_REGISTERY -u $ACR_USERNAME -p $ACR_PASSWORD
     - docker build -t $NAME:$TAG -f Dockerfile .
     - docker tag $NAME:$TAG {{cookiecutter.container_registery}}/$NAME:$TAG
+    - docker tag $NAME:$TAG {{cookiecutter.container_registery}}/$NAME:latest
     - docker push {{cookiecutter.container_registery}}/$NAME:$TAG
+    - docker push {{cookiecutter.container_registery}}/$NAME:latest
   after_script:
-    - docker rmi $NAME:$TAG {{cookiecutter.container_registery}}/$NAME:$TAG
+    - docker rmi $NAME:$TAG 
+    - docker rmi {{cookiecutter.container_registery}}/$NAME:$TAG
+    - docker rmi {{cookiecutter.container_registery}}/$NAME:latest
 {%- if cookiecutter.slack_webhook|length %}
     - >-
       curl -X POST --data-urlencode "payload={\"channel\": \"#pipeline\", \"username\": \"tanbih\", 
