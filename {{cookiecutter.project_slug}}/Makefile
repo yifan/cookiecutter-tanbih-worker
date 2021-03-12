@@ -7,3 +7,5 @@ pdb:
 	. ./env/bin/activate && python3 -m pdb ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json
 dev:
 	. ./env/bin/activate && python3 ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json --repeat 1 --debug --outfile -
+run:
+	. ./env/bin/activate && python3 ./{{cookiecutter.worker_name}}.py $(ARGS)
