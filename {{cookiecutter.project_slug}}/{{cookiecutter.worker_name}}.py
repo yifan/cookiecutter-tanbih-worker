@@ -2,7 +2,8 @@ import logging
 {%- if cookiecutter.prometheus_enabled == 'y' %}
 from prometheus_client import Counter
 {%- endif %}
-from pipeline import {{cookiecutter.worker_type}}Config, {{cookiecutter.worker_type}}
+from pydantic import BaseModel, Field
+from pipeline import {{cookiecutter.worker_type}}Settings, {{cookiecutter.worker_type}}
 from version import __worker__, __version__
 
 
@@ -11,23 +12,39 @@ logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('worker')
 
 
+class Input(BaseModel):
+    text: str = Field(..., title="article text in a single string", min_length=1)
+
+
+{%- if cookiecutter.worker_no_output != 'y' %}
+class Output(BaseModel):
+    output: str = Field(..., title="some output")
+
+
+{%- endif %}
 class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
     def __init__(self):
 {%- if cookiecutter.worker_type == 'Processor' %}
-{%- if cookiecutter.worker_no_output == 'y' %}
-        config = ProcessorConfig(noOutput=True)
-{% else %}
-        config = ProcessorConfig()
-{%- endif -%}
-{%- elif cookiecutter.worker_type == 'Generator' %}
-        config = GeneratorConfig()
+        settings = ProcessorSettings(
+{%- elif cookiecutter.worker_type == 'Producer' %}
+        settings = ProducerSettings(
 {%- elif cookiecutter.worker_type == 'Splitter' %}
-        config = SplitterConfig()
+        settings = SplitterSettings(
 {%- endif %}
+            name=__worker__,
+            version=__version__,
+            description="worker"
+        )
         super().__init__(
-            __worker__, __version__,
-            "{{cookiecutter.project_description}}",
-            config,
+            settings,
+{%- if cookiecutter.worker_type == 'Processor' %}
+            input_class=Input,
+{%- endif %}
+{%- if cookiecutter.worker_no_output == 'y' %}
+            output_class=None,
+{%- elif cookiecutter.worker_type != 'Splitter' %}
+            output_class=Output,
+{%- endif %}
         )
 
     def setup(self):
@@ -35,17 +52,12 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
         # and establish connections here
         pass
 {% if cookiecutter.worker_type == 'Processor' %}
-    def process(self, msg):
-        value = msg.get('existingKey', 1)
-        msg.update({
-            'existingKey': value+1,
-            'newKey': True,
-        })
-        return None
-{% elif cookiecutter.worker_type == 'Generator' %}
+    def process(self, message_content, message_id):
+        return Output(output='some value')
+{% elif cookiecutter.worker_type == 'Producer' %}
     def generate(self):
         # Modify this
-        yield {'key': 'message-id'}
+        yield Output(output='some value')
 {% elif cookiecutter.worker_type == 'Splitter' %}
     def get_topic(self, msg):
         # Modify this
@@ -57,7 +69,4 @@ if __name__ == '__main__':
     worker.parse_args()
     if worker.options.debug:
         logger.setLevel(logging.DEBUG)
-{%- if cookiecutter.worker_retry == 'y' %}
-    worker.use_retry_topic()
-{%- endif %}
     worker.start({%- if cookiecutter.prometheus_enabled == "y" -%} monitoring=True {%- endif %})

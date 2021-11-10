@@ -16,7 +16,7 @@ class Test{{cookiecutter.worker_class_name}}(TestCase):
         result1 = worker.destination.results[0]
         self.assertEqual(result1.get('key'), 'msg1')
 {%- endif -%}
-{% elif cookiecutter.worker_type == 'Generator' %}
+{% elif cookiecutter.worker_type == 'Producer' %}
     def test_generate(self):
         worker = {{cookiecutter.worker_class_name}}()
         [msg] = list(worker.generate())
@@ -24,6 +24,6 @@ class Test{{cookiecutter.worker_class_name}}(TestCase):
 {% elif cookiecutter.worker_type == 'Splitter' %}
     def test_get_topic(self):
         worker = {{cookiecutter.worker_class_name}}()
-        msg = Message({'key': 'a'})
+        msg = Message(content={'key': 'a'})
         self.assertEqual(worker.get_topic(msg), 'a')
 {%- endif %}
