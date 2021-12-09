@@ -1,0 +1,8 @@
+default_context:
+    full_name: "Yifan Zhang"
+    email: "yzhang@hbku.edu.qa"
+    homepage: ""
+    worker_type: "Processor"
+    worker_no_output: "y"
+    slack_webhook: "https://hooks.slack.com/services/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"
+cookiecutters_dir:

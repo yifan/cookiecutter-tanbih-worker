@@ -13,27 +13,26 @@ logger = logging.getLogger('worker')
 
 
 class Input(BaseModel):
-    text: str = Field(..., title="article text in a single string", min_length=1)
+    key: str = Field(..., title="id or key")
 
 
 {%- if cookiecutter.worker_no_output != 'y' %}
 class Output(BaseModel):
-    output: str = Field(..., title="some output")
+    key: str = Field(..., title="id or key")
 
 
 {%- endif %}
+class {{cookiecutter.worker_class_name}}Settings({{cookiecutter.worker_type}}Settings):
+    pass
+
+
 class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
     def __init__(self):
-{%- if cookiecutter.worker_type == 'Processor' %}
-        settings = ProcessorSettings(
-{%- elif cookiecutter.worker_type == 'Producer' %}
-        settings = ProducerSettings(
-{%- elif cookiecutter.worker_type == 'Splitter' %}
-        settings = SplitterSettings(
-{%- endif %}
+        settings = {{cookiecutter.worker_class_name}}Settings(
             name=__worker__,
             version=__version__,
-            description="worker"
+            description="worker",
+            {%- if cookiecutter.prometheus_enabled == "y" -%}monitoring=True,{%- endif %}
         )
         super().__init__(
             settings,
@@ -53,11 +52,11 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
         pass
 {% if cookiecutter.worker_type == 'Processor' %}
     def process(self, message_content, message_id):
-        return Output(output='some value')
+        return Output(key=message_content.key)
 {% elif cookiecutter.worker_type == 'Producer' %}
     def generate(self):
         # Modify this
-        yield Output(output='some value')
+        yield Output(key=message_content.key)
 {% elif cookiecutter.worker_type == 'Splitter' %}
     def get_topic(self, msg):
         # Modify this
@@ -67,6 +66,4 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
 if __name__ == '__main__':
     worker = {{cookiecutter.worker_class_name}}()
     worker.parse_args()
-    if worker.options.debug:
-        logger.setLevel(logging.DEBUG)
-    worker.start({%- if cookiecutter.prometheus_enabled == "y" -%} monitoring=True {%- endif %})
+    worker.start()
