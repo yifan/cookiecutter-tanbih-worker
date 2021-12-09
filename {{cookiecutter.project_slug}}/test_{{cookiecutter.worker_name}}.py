@@ -8,7 +8,8 @@ class Test{{cookiecutter.worker_class_name}}(TestCase):
     def test_worker(self):
         worker = {{cookiecutter.worker_class_name}}()
         msgs = [{'key': 'msg1'}, {'key': 'msg2'}]
-        worker.parse_args(args=['--kind', 'MEM'], config={'data': msgs})
+        worker.parse_args(args=['--in-kind', 'MEM'])
+        worker.source.load_data(msgs)
         worker.start()
 {%- if cookiecutter.worker_no_output == 'y' %}
         # make sure we get two results
