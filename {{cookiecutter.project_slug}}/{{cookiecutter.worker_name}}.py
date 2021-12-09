@@ -32,7 +32,6 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
             name=__worker__,
             version=__version__,
             description="worker",
-            {%- if cookiecutter.prometheus_enabled == "y" -%}monitoring=True,{%- endif %}
         )
         super().__init__(
             settings,
