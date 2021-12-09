@@ -1,11 +1,25 @@
+VENV = venv
+PY = python3
+VPY = $(VENV)/bin/$(PY)
+REQUIREMENTS = requirements.txt
+PIPSTR = $(foreach wrd, $(REQUIREMENTS), -r $(wrd))
+
+.PHONY: $(VPY)
+$(VPY): $(VENV)
+	$(PY) -m venv $(VENV) && \
+	$(VPY) -m pip install -r requirements.txt
+		. ./env/bin/activate && python3 -m pip install $(PIPSTR)
+
 .PHONY: test
-init:
-	rm -rf env && python3 -m venv env && . ./env/bin/activate && python3 -m pip install -r requirements.txt
-test:
-	. ./env/bin/activate && python3 -m pytest -v
-pdb:
-	. ./env/bin/activate && python3 -m pdb ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json
-dev:
-	. ./env/bin/activate && python3 ./{{cookiecutter.worker_name}}.py --kind FILE --infile fixtures/articles.json --repeat 1 --debug --outfile -
-run:
-	. ./env/bin/activate && python3 ./{{cookiecutter.worker_name}}.py $(ARGS)
+test: $(VPY)
+	$(VPY) -m pytest $(ARGS)
+
+.PHONY: dev
+dev: $(VPY)
+	$(VPY) ./{{cookiecutter.worker_name}}.py --debug \
+		--in-kind FILE --in-filename fixtures/input.jsonl --in-content-only \
+		--out-kind FILE --out-filename -
+
+.PHONY: run
+run: $(VPY)
+	$(VPY) ./{{cookiecutter.worker_name}}.py $(ARGS)
