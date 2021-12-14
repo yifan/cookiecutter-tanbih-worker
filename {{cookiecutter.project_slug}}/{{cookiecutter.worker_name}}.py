@@ -1,7 +1,4 @@
 import logging
-{%- if cookiecutter.prometheus_enabled == 'y' %}
-from prometheus_client import Counter
-{%- endif %}
 from pydantic import BaseModel, Field
 from pipeline import {{cookiecutter.worker_type}}Settings, {{cookiecutter.worker_type}}
 from version import __worker__, __version__
