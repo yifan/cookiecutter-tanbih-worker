@@ -13,12 +13,12 @@ class Input(BaseModel):
     input_value str = Field(..., title="a string value")
 
 
-{% if cookiecutter.worker_no_output != 'y' %}
+{% if cookiecutter.worker_no_output != 'y' -%}
 class Output(BaseModel):
     output_value: str = Field(..., title="a string value")
 
 
-{% endif %}
+{% endif -%}
 class {{cookiecutter.worker_class_name}}Settings({{cookiecutter.worker_type}}Settings):
     pass
 
