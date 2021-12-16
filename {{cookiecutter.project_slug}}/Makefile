@@ -1,14 +1,13 @@
-VENV = venv
+VENV = .venv
 PY = python3
 VPY = $(VENV)/bin/$(PY)
 REQUIREMENTS = requirements.txt
 PIPSTR = $(foreach wrd, $(REQUIREMENTS), -r $(wrd))
 
 .PHONY: $(VPY)
-$(VPY): $(VENV)
+$(VPY): 
 	$(PY) -m venv $(VENV) && \
-	$(VPY) -m pip install -r requirements.txt
-		. ./env/bin/activate && python3 -m pip install $(PIPSTR)
+	python3 -m pip install $(PIPSTR)
 
 .PHONY: test
 test: $(VPY)

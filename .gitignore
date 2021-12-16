@@ -5,3 +5,7 @@ test.sh
 **.swp
 .DS_Store
 .python-version
+env
+.env
+venv
+.venv
