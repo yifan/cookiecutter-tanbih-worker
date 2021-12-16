@@ -9,6 +9,7 @@ logging.basicConfig(format=FORMAT)
 logger = logging.getLogger('worker')
 
 
+{% if cookiecutter.worker_type != 'Producer' -%}
 class Input(BaseModel):
     """ Input class definition
         A worker should define the fields needed for worker to function
@@ -16,7 +17,7 @@ class Input(BaseModel):
     """
     input_value: str = Field(..., title="a string value")
 
-
+{% endif -%}
 {% if cookiecutter.worker_no_output != 'y' -%}
 class Output(BaseModel):
     """ Output class definition
@@ -71,16 +72,17 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
         return Output(output_value=text)
 {% elif cookiecutter.worker_type == 'Producer' %}
     def generate(self):
-        if self.settings.flag:
-            text = "flag is on"
-        else:
-            text = "flag is off"
-        # Modify this
-        yield Output(output_value=text)
+        # generate two outputs only
+        for i in range(2):
+            if self.settings.flag:
+                text = "flag is on"
+            else:
+                text = "flag is off"
+            yield Output(output_value=text)
 {% elif cookiecutter.worker_type == 'Splitter' %}
     def get_topic(self, msg):
         # Modify this
-        return msg.get('key', 'default')
+        return msg.content.get('input_value', 'default')
 {%- endif %}
 
 if __name__ == '__main__':
