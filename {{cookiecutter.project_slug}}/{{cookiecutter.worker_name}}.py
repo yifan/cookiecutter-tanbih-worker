@@ -20,7 +20,7 @@ class Output(BaseModel):
 
 {% endif -%}
 class {{cookiecutter.worker_class_name}}Settings({{cookiecutter.worker_type}}Settings):
-    pass
+    flag: bool = Field(False, title="boolean flag for worker as an example")
 
 
 class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
@@ -48,11 +48,19 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
         pass
 {% if cookiecutter.worker_type == 'Processor' %}
     def process(self, message_content, message_id):
-        return Output(key=message_content.key)
+        if self.settings.flag:
+            text = "flag is on"
+        else:
+            text = "flag is off"
+        return Output(output_value=text)
 {% elif cookiecutter.worker_type == 'Producer' %}
     def generate(self):
+        if self.settings.flag:
+            text = "flag is on"
+        else:
+            text = "flag is off"
         # Modify this
-        yield Output(output_value="some value")
+        yield Output(output_value=text)
 {% elif cookiecutter.worker_type == 'Splitter' %}
     def get_topic(self, msg):
         # Modify this
