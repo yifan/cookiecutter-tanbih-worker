@@ -10,16 +10,26 @@ logger = logging.getLogger('worker')
 
 
 class Input(BaseModel):
-    input_value str = Field(..., title="a string value")
+    """ Input class definition
+        A worker should define the fields needed for worker to function
+        here.
+    """
+    input_value: str = Field(..., title="a string value")
 
 
 {% if cookiecutter.worker_no_output != 'y' -%}
 class Output(BaseModel):
+    """ Output class definition
+    """
     output_value: str = Field(..., title="a string value")
 
 
 {% endif -%}
 class {{cookiecutter.worker_class_name}}Settings({{cookiecutter.worker_type}}Settings):
+    """ worker specific settings
+        user will be able to set these values in environment variables or command line,
+        worker will be able to access it through self.settings
+    """
     flag: bool = Field(False, title="boolean flag for worker as an example")
 
 
@@ -44,14 +54,20 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
 
     def setup(self):
         # Add custom initialization code such as loading models
-        # and establish connections here
+        # and establish connections here. This function will be called
+        # once when worker instance is created
         pass
 {% if cookiecutter.worker_type == 'Processor' %}
-    def process(self, message_content, message_id):
+    def process(self, input, id_):
+        """ process function is called for every input, message_content is a instance
+            of Input class defined above.
+
+        """
         if self.settings.flag:
-            text = "flag is on"
+            text = input.input_value
         else:
-            text = "flag is off"
+            text = input.input_value + " flag is off"
+
         return Output(output_value=text)
 {% elif cookiecutter.worker_type == 'Producer' %}
     def generate(self):
