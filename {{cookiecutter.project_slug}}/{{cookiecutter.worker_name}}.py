@@ -10,15 +10,15 @@ logger = logging.getLogger('worker')
 
 
 class Input(BaseModel):
-    key: str = Field(..., title="id or key")
+    input_value str = Field(..., title="a string value")
 
 
-{%- if cookiecutter.worker_no_output != 'y' %}
+{% if cookiecutter.worker_no_output != 'y' %}
 class Output(BaseModel):
-    key: str = Field(..., title="id or key")
+    output_value: str = Field(..., title="a string value")
 
 
-{%- endif %}
+{% endif %}
 class {{cookiecutter.worker_class_name}}Settings({{cookiecutter.worker_type}}Settings):
     pass
 
@@ -52,7 +52,7 @@ class {{cookiecutter.worker_class_name}}({{cookiecutter.worker_type}}):
 {% elif cookiecutter.worker_type == 'Producer' %}
     def generate(self):
         # Modify this
-        yield Output(key=message_content.key)
+        yield Output(output_value="some value")
 {% elif cookiecutter.worker_type == 'Splitter' %}
     def get_topic(self, msg):
         # Modify this
