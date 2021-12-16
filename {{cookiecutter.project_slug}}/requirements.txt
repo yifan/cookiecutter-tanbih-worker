@@ -1,2 +1,3 @@
-tanbih-pipeline>=0.11.30
+pydantic
+tanbih-pipeline==0.11.*
 pytest

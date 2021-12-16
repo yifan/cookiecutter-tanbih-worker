@@ -5,9 +5,9 @@ REQUIREMENTS = requirements.txt
 PIPSTR = $(foreach wrd, $(REQUIREMENTS), -r $(wrd))
 
 .PHONY: $(VPY)
-$(VPY): 
+$(VPY):
 	$(PY) -m venv $(VENV) && \
-	python3 -m pip install $(PIPSTR)
+	$(VPY) -m pip install $(PIPSTR)
 
 .PHONY: test
 test: $(VPY)
